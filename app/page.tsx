@@ -5,6 +5,7 @@ import {
   deleteG254G255,
   scanForG54,
   preCallNextTool,
+  preCallNextToolV2,
 } from "../lib/processGcode";
 
 export default function Home() {
@@ -15,11 +16,13 @@ export default function Home() {
   const [removeG254G255, setRemoveG254G255] = useState(true);
   const [checkG54, setCheckG54] = useState(true);
   const [preCallTools, setPreCallTools] = useState(true);
+  const [preCallToolsV2, setPreCallToolsV2] = useState(false);
 
   const [result, setResult] = useState<string>("");
   const [g54Result, setG54Result] = useState<string>("");
   const [processedUrl, setProcessedUrl] = useState<string | null>(null);
   const [processedName, setProcessedName] = useState<string | null>(null);
+  const [showGif, setShowGif] = useState(false);
 
   const handleFile = async (file: File) => {
     setFileName(file.name);
@@ -50,10 +53,16 @@ export default function Home() {
       return;
     }
 
-    if (!removeG254G255 && !checkG54 && !preCallTools) {
+    if (!removeG254G255 && !checkG54 && !preCallTools && !preCallToolsV2) {
       alert("Select at least one option");
       return;
     }
+
+    setShowGif(true);
+
+    setTimeout(() => {
+      setShowGif(false);
+    }, 100000);
 
     let currentContent = fileContent;
     let didCreateEditedFile = false;
@@ -86,6 +95,11 @@ export default function Home() {
 
     if (preCallTools) {
       currentContent = preCallNextTool(currentContent);
+      didCreateEditedFile = true;
+    }
+
+    if (preCallToolsV2) {
+      currentContent = preCallNextToolV2(currentContent);
       didCreateEditedFile = true;
     }
 
@@ -199,6 +213,16 @@ export default function Home() {
             />
             <span>Pre-call next tool after each tool change</span>
           </label>
+
+          <label className="flex items-center gap-3 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={preCallToolsV2}
+              onChange={(e) => setPreCallToolsV2(e.target.checked)}
+              className="h-4 w-4"
+            />
+            <span>Pre-call next tool V2 after each tool change</span>
+          </label>
         </div>
 
         <button
@@ -207,6 +231,18 @@ export default function Home() {
         >
           Process G-Code
         </button>
+
+        {showGif && (
+          <div className="mt-6 flex justify-center">
+            <img
+              src="/joker.gif"
+              alt="Processing G-Code"
+              className="w-80 rounded-xl"
+            />
+          </div>
+        )}
+
+
 
         {result && (
           <div className="mt-6 text-center text-lg text-zinc-200">

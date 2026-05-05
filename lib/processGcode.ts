@@ -57,4 +57,44 @@ export function preCallNextTool(content: string): string {
   }
 
   return lines.join("\n");
+
+
+
+  
+}
+
+export function preCallNextToolV2(content: string): string {
+  const lines = content.split(/\r?\n/);
+
+  const toolChangeIndexes: number[] = [];
+  const toolNumbers: string[] = [];
+
+  for (let i = 0; i < lines.length; i++) {
+    const match = lines[i].match(/^\s*(?:N\d+\s*)?T(\d+)\s*M0?6\b/i);
+
+    if (match) {
+      toolChangeIndexes.push(i);
+      toolNumbers.push(match[1]);
+    }
+  }
+
+  if (toolChangeIndexes.length < 1) {
+    return content;
+  }
+
+  let offset = 0;
+
+  for (let i = 0; i < toolChangeIndexes.length; i++) {
+    const insertAt = toolChangeIndexes[i] + 2 + offset;
+
+    const nextToolNumber =
+      i === toolNumbers.length - 1
+        ? toolNumbers[0]
+        : toolNumbers[i + 1];
+
+    lines.splice(insertAt, 0, `T${nextToolNumber}`);
+    offset++;
+  }
+
+  return lines.join("\n");
 }
