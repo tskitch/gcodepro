@@ -62,7 +62,7 @@ export default function Home() {
 
     setTimeout(() => {
       setShowGif(false);
-    }, 1300);
+    }, 1700);
 
     let currentContent = fileContent;
     let didCreateEditedFile = false;
