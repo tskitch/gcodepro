@@ -62,7 +62,7 @@ export default function Home() {
 
     setTimeout(() => {
       setShowGif(false);
-    }, 100000);
+    }, 1300);
 
     let currentContent = fileContent;
     let didCreateEditedFile = false;
@@ -235,7 +235,7 @@ export default function Home() {
         {showGif && (
           <div className="mt-6 flex justify-center">
             <img
-              src="/joker.gif"
+              src="/joker1.gif"
               alt="Processing G-Code"
               className="w-80 rounded-xl"
             />
