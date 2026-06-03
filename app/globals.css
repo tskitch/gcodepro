@@ -1,26 +1,45 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #050714;
+  --foreground: #f7fbff;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-midnight-abyss: #050714;
+  --color-ghost-white: #f7fbff;
+  --color-whisper-blue: #b8c7e6;
+  --color-interstellar-gray: #7d89a6;
+  --color-slate-dew: #182034;
+  --color-neon-violet: #8c5cff;
+  --color-comet: #9ad8ff;
+  --color-arctic-mist: #d9f2ff;
+  --color-celestial-light: #64d8ff;
+  --shadow-subtle-4: 0 0 0 1px rgb(154 216 255 / 0.08), 0 18px 48px rgb(0 0 0 / 0.32);
+  --shadow-subtle-6: 0 0 0 1px rgb(154 216 255 / 0.12), 0 24px 80px rgb(0 0 0 / 0.42), 0 0 56px rgb(140 92 255 / 0.12);
+  --radius-2xl: 1.25rem;
+  --radius-3xl: 1.75rem;
+  --radius-full: 9999px;
+  --font-untitled-sans: "Inter", "Segoe UI", Arial, Helvetica, sans-serif;
+  --font-aeonikpro: "Inter", "Segoe UI", Arial, Helvetica, sans-serif;
+  --font-sans: var(--font-untitled-sans);
+  --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
 }
 
 body {
-  background: var(--background);
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 18% -10%, rgb(100 216 255 / 0.14), transparent 34rem),
+    radial-gradient(circle at 82% 12%, rgb(140 92 255 / 0.18), transparent 30rem),
+    radial-gradient(circle at 50% 110%, rgb(154 216 255 / 0.08), transparent 34rem),
+    var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-untitled-sans), Arial, Helvetica, sans-serif;
+}
+
+::selection {
+  background: rgb(140 92 255 / 0.38);
+  color: var(--foreground);
 }
