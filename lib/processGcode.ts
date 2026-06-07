@@ -98,3 +98,27 @@ export function preCallNextToolV2(content: string): string {
 
   return lines.join("\n");
 }
+
+export function g187Swap(content: string): string {
+  const lines = content.split(/\r?\n/);
+
+  const g187P3Indexes: number[] = [];
+
+  for (let i = 0; i < lines.length; i++) {
+    const match = lines[i].match(/\bG187\b.*\bP3\b/i);
+
+    if (match) {
+      g187P3Indexes.push(i);
+    }
+  }
+
+  if (g187P3Indexes.length < 1) {
+    return content;
+  }
+
+  for (const index of g187P3Indexes) {
+    lines[index] = lines[index].replace(/\bP3\b/i, "P1");
+  }
+
+  return lines.join("\n");
+}

@@ -7,6 +7,7 @@ import {
   scanForG54,
   preCallNextTool,
   preCallNextToolV2,
+  g187Swap,
 } from "../lib/processGcode";
 
 export default function Home() {
@@ -18,6 +19,7 @@ export default function Home() {
   const [checkG54, setCheckG54] = useState(false);
   const [preCallTools, setPreCallTools] = useState(false);
   const [preCallToolsV2, setPreCallToolsV2] = useState(false);
+  const [g187SwapEnabled, setG187SwapEnabled] = useState(false);
 
   const [result, setResult] = useState<string>("");
   const [g54Result, setG54Result] = useState<string>("");
@@ -54,7 +56,7 @@ export default function Home() {
       return;
     }
 
-    if (!removeG254G255 && !checkG54 && !preCallTools && !preCallToolsV2) {
+    if (!removeG254G255 && !checkG54 && !preCallTools && !preCallToolsV2 && !g187SwapEnabled) {
       alert("Select at least one option");
       return;
     }
@@ -102,6 +104,10 @@ export default function Home() {
     if (preCallToolsV2) {
       currentContent = preCallNextToolV2(currentContent);
       didCreateEditedFile = true;
+    }
+    if (g187SwapEnabled) {
+      currentContent = g187Swap(currentContent);
+      didCreateEditedFile = true; 
     }
 
     if (didCreateEditedFile) {
@@ -231,7 +237,17 @@ export default function Home() {
               />
               <span>Pre-call next tool after each tool change</span>
             </label>
-
+            
+            <label className="group flex cursor-pointer items-center gap-3 rounded-2xl border border-comet/12 bg-midnight-abyss/58 p-4 text-sm text-whisper-blue transition hover:border-comet/30 hover:bg-slate-dew/35 has-[:checked]:border-neon-violet/35 has-[:checked]:bg-neon-violet/10">
+              <input
+                type="checkbox"
+                checked={g187SwapEnabled}
+                onChange={(e) => setG187SwapEnabled(e.target.checked)}
+                className="h-4 w-4 rounded border-comet/30 bg-midnight-abyss text-neon-violet accent-neon-violet focus:ring-2 focus:ring-neon-violet/50 focus:ring-offset-2 focus:ring-offset-midnight-abyss"
+              />
+              <span>G187 swap P3 to P1</span>
+            </label>
+            
             <label className="group flex cursor-pointer items-center gap-3 rounded-2xl border border-comet/12 bg-midnight-abyss/58 p-4 text-sm text-whisper-blue transition hover:border-comet/30 hover:bg-slate-dew/35 has-[:checked]:border-neon-violet/35 has-[:checked]:bg-neon-violet/10">
               <input
                 type="checkbox"
