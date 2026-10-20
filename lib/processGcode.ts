@@ -9,7 +9,7 @@ export function scanForG54(content: string): G54ScanResult {
   const matchingLines: number[] = [];
 
   splitLines.forEach((line, index) => {
-    if (/\bG54\b/i.test(line)) {
+    if (/(?<![A-Z.])G0*54(?:\.0+)?(?![\d.])/i.test(line)) {
       matchingLines.push(index + 1);
     }
   });
@@ -171,3 +171,11 @@ export function g187Swap(content: string): string {
 }
 
 
+
+/** Remove numeric B-axis words, preserving comments and original line endings. */
+export function deleteBAxisValues(content: string): string {
+  return content.replace(
+    /\([^)]*\)|;[^\r\n]*|(?<![A-Z_])B[ \t]*[+-]?(?:\d+(?:\.\d*)?|\.\d+)/gi,
+    (word) => /^[bB]/.test(word) ? "" : word,
+  );
+}

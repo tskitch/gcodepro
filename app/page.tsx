@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import {
   deleteG254G255,
+  deleteBAxisValues,
   scanForG54,
   preCallNextTool,
   preCallNextToolV2,
@@ -17,7 +18,8 @@ export default function Home() {
   const [dragging, setDragging] = useState(false);
 
   const [removeG254G255, setRemoveG254G255] = useState(false);
-  const [checkG54, setCheckG54] = useState(false);
+  const [removeBAxis, setRemoveBAxis] = useState(false);
+  const [g54Found, setG54Found] = useState(false);
   const [preCallTools, setPreCallTools] = useState(false);
   const [preCallToolsV2, setPreCallToolsV2] = useState(false);
   const [preCallToolsV3, setPreCallToolsV3] = useState(false);
@@ -35,6 +37,7 @@ export default function Home() {
     setFileContent(text);
     setResult("");
     setG54Result("");
+    setG54Found(false);
 
     if (processedUrl) {
       URL.revokeObjectURL(processedUrl);
@@ -58,11 +61,6 @@ export default function Home() {
       return;
     }
 
-    if (!removeG254G255 && !checkG54 && !preCallTools && !preCallToolsV2 && !g187SwapEnabled && !preCallToolsV3) {
-      alert("Select at least one option");
-      return;
-    }
-
     setShowGif(true);
 
     setTimeout(() => {
@@ -74,6 +72,7 @@ export default function Home() {
 
     setResult("");
     setG54Result("");
+    setG54Found(false);
 
     if (processedUrl) {
       URL.revokeObjectURL(processedUrl);
@@ -81,9 +80,10 @@ export default function Home() {
       setProcessedName(null);
     }
 
-    if (checkG54) {
+    {
       const scan = scanForG54(fileContent);
 
+      setG54Found(scan.found);
       if (scan.found) {
         setG54Result(
           `G54 found ${scan.count} time(s) on line(s): ${scan.lines.join(", ")}`
@@ -91,6 +91,11 @@ export default function Home() {
       } else {
         setG54Result("No G54 found.");
       }
+    }
+
+    if (removeBAxis) {
+      currentContent = deleteBAxisValues(currentContent);
+      didCreateEditedFile = true;
     }
 
     if (removeG254G255) {
@@ -131,7 +136,7 @@ export default function Home() {
       setProcessedUrl(url);
       setProcessedName(newFileName);
       setResult("Edited file ready below.");
-    } else if (checkG54) {
+    } else {
       setResult("Scan complete.");
     }
   };
@@ -215,6 +220,10 @@ export default function Home() {
           </div>
 
           <div className="mt-3 grid gap-3 md:grid-cols-2">
+            <label className="flex cursor-pointer items-center gap-3 rounded-2xl border border-comet/20 bg-midnight-abyss/60 p-4 text-sm text-whisper-blue has-[:checked]:border-neon-violet/35 has-[:checked]:bg-neon-violet/10">
+              <input type="checkbox" checked={removeBAxis} onChange={(e) => setRemoveBAxis(e.target.checked)} className="h-4 w-4 accent-neon-violet" />
+              <span>4th axis b deleter</span>
+            </label>
             <label className="group flex cursor-pointer items-center gap-3 rounded-2xl border border-comet/12 bg-midnight-abyss/58 p-4 text-sm text-whisper-blue transition hover:border-comet/30 hover:bg-slate-dew/35 has-[:checked]:border-neon-violet/35 has-[:checked]:bg-neon-violet/10">
               <input
                 type="checkbox"
@@ -228,11 +237,11 @@ export default function Home() {
             <label className="group flex cursor-pointer items-center gap-3 rounded-2xl border border-comet/12 bg-midnight-abyss/58 p-4 text-sm text-whisper-blue transition hover:border-comet/30 hover:bg-slate-dew/35 has-[:checked]:border-neon-violet/35 has-[:checked]:bg-neon-violet/10">
               <input
                 type="checkbox"
-                checked={checkG54}
-                onChange={(e) => setCheckG54(e.target.checked)}
+                checked
+                disabled
                 className="h-4 w-4 rounded border-comet/30 bg-midnight-abyss text-neon-violet accent-neon-violet focus:ring-2 focus:ring-neon-violet/50 focus:ring-offset-2 focus:ring-offset-midnight-abyss"
               />
-              <span>Scan for G54</span>
+              <span>Scan for G54 — locked on (always enabled)</span>
             </label>
 
             <label className="group flex cursor-pointer items-center gap-3 rounded-2xl border border-comet/12 bg-midnight-abyss/58 p-4 text-sm text-whisper-blue transition hover:border-comet/30 hover:bg-slate-dew/35 has-[:checked]:border-neon-violet/35 has-[:checked]:bg-neon-violet/10">
@@ -283,6 +292,24 @@ export default function Home() {
         >
           Process G-Code
         </button>
+
+        {g54Result && (
+          <div
+            role={g54Found ? "alert" : "status"}
+            aria-live={g54Found ? "assertive" : "polite"}
+            className={g54Found
+              ? "mt-5 rounded-2xl border-4 border-red-500 bg-red-950 p-6 text-white shadow-[0_0_48px_rgba(239,68,68,0.6)]"
+              : "mt-5 rounded-2xl border border-comet/20 bg-slate-dew/45 p-5 text-whisper-blue"}
+          >
+            {g54Found && (
+              <>
+                <h2 className="mb-3 text-3xl font-black tracking-wide text-red-300 sm:text-4xl">⚠ WARNING: G54 DETECTED</h2>
+                <p className="mb-3 text-lg font-bold">STOP — verify the work offset before running this program.</p>
+              </>
+            )}
+            <p className={g54Found ? "break-words text-lg font-semibold" : "text-sm"}>{g54Result}</p>
+          </div>
+        )}
 
         {showGif && (
           <div className="mt-6 flex justify-center">
